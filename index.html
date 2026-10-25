@@ -413,18 +413,20 @@ const useNotifs=u=>{const[list,setList]=uS([]);
 const Header=({onToggleSidebar:tg})=>{
  const{currentUser:u,usersList:users,switchUser:sw,getRoleLabel:rl,isGuest:gst,login:doLogin,logout:doLogout}=w();
  const[pop,setPop]=uS(null),[yr,setYr]=uS(acadYear());const nts=useNotifs(u);const ref=uR(null);
+ const[cp,setCp]=uS(false);
+ uE(()=>{const f=e=>{const t=e.target;if(!t||!t.classList||!t.classList.contains('ms-main'))return;const room=t.scrollHeight-t.clientHeight;setCp(c=>c?!(t.scrollTop<8):(t.scrollTop>40&&room>180))};document.addEventListener('scroll',f,true);return()=>document.removeEventListener('scroll',f,true)},[]);
  const[lg,setLg]=uS(false),[em,setEm]=uS(''),[pw,setPw]=uS(''),[sp,setSp]=uS(false),[er,setEr]=uS(''),[bz,setBz]=uS(false);
  uE(()=>{const f=()=>{setEm('');setPw('');setSp(false);setEr('');setLg(true)};window.addEventListener('ms-open-login',f);return()=>window.removeEventListener('ms-open-login',f)},[]);
  uE(()=>{if(!lg)return;const f=e=>{if(e.key==='Escape'&&!bz)setLg(false)};document.addEventListener('keydown',f);return()=>document.removeEventListener('keydown',f)},[lg,bz]);
  const sub=async ev=>{ev&&ev.preventDefault();if(!em.trim()){setEr('Masukkan alamat email Anda.');return}if(!pw){setEr('Masukkan kata sandi Anda.');return}setBz(true);setEr('');const r=await doLogin(em,pw);setBz(false);if(r.ok){setLg(false);setEm('');setPw('');setPop(null)}else setEr(r.error||'Gagal login.')};
  uE(()=>{const f=e=>{if(ref.current&&!ref.current.contains(e.target))setPop(null)};document.addEventListener('mousedown',f);return()=>document.removeEventListener('mousedown',f)},[]);
  const years=[...new Set(['2024/2025','2025/2026','2026/2027',acadYear()])].sort();
- return h('header',{className:'ms-header'},
+ return h('header',{className:'ms-header'+(cp?' is-compact':'')},
   h('div',{className:'ms-hd-dark'},h(HdBg),h(Ribbon),
    h('div',{className:'ms-hd-brand'},
     h('button',{type:'button',className:'ms-burger',onClick:tg,'aria-label':'Buka navigasi'},h(ic.menu,{size:22})),
     h(Logo),
-    h('div',{className:'ms-hd-txt'},h('div',{className:'ms-hd-title'},"MA’ARIF SMART BONDOWOSO"),
+    h('div',{className:'ms-hd-txt'},h('div',{className:'ms-hd-title'},"MA’ARIF SMART ",h('span',{className:'ms-hd-t2'},"BONDOWOSO")),
      h('div',{className:'ms-hd-sub'},"Sistem Manajemen Administrasi, Informasi, Rekapitulasi dan Integrasi Pendidikan Ma’arif"),
      h('div',{className:'ms-hd-sub'},"PC LP Ma’arif NU Bondowoso")))),
   h('div',{className:'ms-hd-ctl',ref},
@@ -1182,6 +1184,43 @@ body{margin:0;background:var(--ms-bg)}
 /* ---------- Mode lihat: halaman baca-saja ---------- */
 .ms-readonly input,.ms-readonly textarea,.ms-readonly select,.ms-readonly button{pointer-events:none;opacity:.55;cursor:not-allowed}
 .ms-ro-note{background:#eef6ff;border:1px solid #cfe3f7;color:#1d4f86;border-radius:10px;padding:9px 14px;font-size:12.5px;font-weight:600}
+
+/* ---------- Header HP: rapi & profesional ---------- */
+@media (max-width:820px){
+  .ms-header{height:auto;min-height:0;box-shadow:0 2px 0 #c99a2b,0 6px 14px rgba(2,47,32,.18)}
+  .ms-hd-dark{background:linear-gradient(135deg,#02432b 0%,#035536 55%,#066a40 100%)}
+  .ms-hd-bg{display:none}
+  .ms-hd-brand{display:grid;grid-template-columns:auto auto minmax(0,1fr);align-items:center;column-gap:10px;row-gap:0;padding:8px 12px 10px}
+  .ms-burger{padding:7px;border-radius:10px;background:rgba(255,255,255,.14)}
+  .ms-logo{width:56px;height:42px}
+  .ms-hd-txt{display:contents}
+  .ms-header .ms-hd-title,.ms-header:has(.ms-user.is-guest) .ms-hd-title{padding-right:0;margin-right:var(--ms-ctl,92px);font-size:16px;line-height:1.15;letter-spacing:.2px;white-space:normal}
+  .ms-hd-t2{display:block;margin-top:2px;font-size:11px;font-weight:700;letter-spacing:.14em;color:#f1d98a}
+  .ms-hd-sub{grid-column:1/-1;display:block;white-space:normal;overflow:visible;text-overflow:clip;opacity:1;font-size:11px;line-height:1.45;color:rgba(255,255,255,.92)}
+  .ms-hd-title+.ms-hd-sub{margin-top:9px;padding-top:8px;border-top:1px solid rgba(241,217,138,.35);text-wrap:balance}
+  .ms-hd-sub+.ms-hd-sub{margin-top:2px;font-weight:700;color:#f1d98a;letter-spacing:.2px}
+  .ms-hd-ctl{top:0;right:0;height:58px;gap:6px;padding-right:12px}
+  .ms-avatar{width:34px;height:34px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);box-shadow:none}
+  .ms-avatar .ms-ico{width:20px;height:20px}
+  .ms-user,.ms-user.is-guest{gap:8px;padding-left:0;border-left:0}
+  .ms-header{--ms-ctl:86px}
+  .ms-header:has(.ms-user.is-guest){--ms-ctl:80px}
+  .ms-user.is-guest .ms-avatar,.ms-user.is-guest .ms-user-r{display:none}
+  .ms-user.is-guest{padding:7px 16px;border:1px solid rgba(241,217,138,.75);border-radius:99px;background:rgba(255,255,255,.08)}
+  .ms-user.is-guest .ms-user-n{font-size:13px;font-weight:700;color:#f1d98a}
+  .ms-header.is-compact .ms-hd-sub{display:none}
+  .ms-header.is-compact .ms-hd-brand{padding-bottom:8px}
+  .ms-header.is-compact .ms-hd-t2{display:none}
+}
+@media (max-width:480px){
+  .ms-header .ms-hd-title,.ms-header:has(.ms-user.is-guest) .ms-hd-title{font-size:15px}
+  .ms-hd-t2{font-size:10.5px}
+}
+@media (max-width:340px){
+  .ms-logo{width:46px;height:35px}
+  .ms-header .ms-hd-title,.ms-header:has(.ms-user.is-guest) .ms-hd-title{font-size:13.5px}
+  .ms-hd-t2{font-size:9.5px;letter-spacing:.1em}
+}
 </style>
 <style id="ms-polish">
 /* ===== Perapian tampilan: proporsi, ritme jarak, dan keterbacaan ===== */
